@@ -138,8 +138,12 @@ class AliPay(object):
         key = alipay_public_key
         signer = PKCS1_v1_5.new(key)
         digest = SHA256.new()
-        digest.update(raw_content.encode("utf8"))
-        if signer.verify(digest, b64decode(signature.encode("utf8"))):
+        if isinstance(raw_content, unicode):
+            raw_content = raw_content.encode('utf-8')
+        digest.update(raw_content)
+        if isinstance(signature, unicode):
+            signature = signature.encode('utf-8')
+        if signer.verify(digest, b64decode(signature)):
             return True
         return False
 
@@ -147,8 +151,17 @@ class AliPay(object):
     def verify(cls, data, signature, alipay_public_key):
         if "sign_type" in data:
             sign_type = data.pop("sign_type")
-        # 排序后的字符串
-        print("data:", data)
         unsigned_items = cls.ordered_data(data)
-        message = "&".join("{}={}".format(k, v) for k, v in unsigned_items)
+        message = ''
+        for k, v in unsigned_items:
+            # 兼容一下不同Python版本
+            if isinstance(k, unicode):
+                k = k.encode('utf-8')
+            if isinstance(v, unicode):
+                v = v.encode('utf-8')
+            if message:
+                message = '&'.join([message, '{}={}'.format(k, v)])
+            else:
+                message = '{}={}'.format(k, v)
+
         return cls._verify(message, signature, alipay_public_key)

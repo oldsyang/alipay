@@ -26,7 +26,7 @@ SECRET_KEY = '#=klh%=cze!3_5u(%p(e)6dp(met7u9(cwv=5tl%&$3#l^+$-y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -43,7 +43,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -99,3 +99,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 PAY_APP_ID = ''
+PAY_CALLBACK_URL=''
+PAY_CALLBACK_NOTIFY_URL=''
