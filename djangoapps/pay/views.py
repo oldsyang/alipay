@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
-import os
 import uuid
 
+import os
 from Crypto.PublicKey import RSA
 from django.conf import settings
 from django.shortcuts import render, HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from utils.alipay import AliPay
 
 path = os.path.dirname(os.path.abspath(__file__))
 
+csrf_exempt_m = method_decorator(csrf_exempt)
+
 
 def index(request):
     alipay = AliPay(
         appid=settings.PAY_APP_ID,
-        app_notify_url='http://localhost.com/api/pay/callback/',
+        app_notify_url=settings.PAY_CALLBACK_NOTIFY_URL,
         app_private_key_path=os.path.join(path, 'key/private_2048.txt'),
-        return_url='http://localhost.com/api/pay/callback/'
+        return_url=settings.PAY_CALLBACK_URL
     )
     url = alipay.direct_pay(
         subject="测试订单",
@@ -33,6 +37,7 @@ class AlipayValidateAPI(View):
     def get(self, request):
         return render(request, 'payover.html')
 
+    @method_decorator(csrf_exempt)
     def post(self, request):
         """在支付完成之后会给return_url发请求，必须验证这个返回是否是支付宝返回的"""
 
